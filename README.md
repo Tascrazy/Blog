@@ -19,7 +19,7 @@ Antes de começar, verifique se você tem o seguinte instalado:
 - [Node.js](https://nodejs.org/) (versão 14 ou superior)
 - [MongoDB](https://www.mongodb.com/) (instância local ou MongoDB Atlas)
 
-### Backend
+### Backend / Frontend
 
 1. Navegue até a pasta do backend:
    - cd BlogApi
