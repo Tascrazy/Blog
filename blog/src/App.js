@@ -6,6 +6,7 @@ import ArticlesListPage from './pages/ArticlesListPage';
 import AboutPage from './pages/AboutPage';
 import LoginPage from './pages/LoginPage';
 import CreateAccountPage from './pages/CreateAccountPage';
+import CreateArticlePage from './pages/CreateArticlePage';
 import NavBar from './NavBar';
 
 function App() {
@@ -22,6 +23,7 @@ function App() {
               <Route path="/articlelist/:articleId" element={<ArticlePage />} />
               <Route path="/login" element={<LoginPage />} />
               <Route path="/newaccount" element={<CreateAccountPage />} />
+              <Route path="/newarticle" element={<CreateArticlePage />} />
             </Routes>
           </div>
         </div>

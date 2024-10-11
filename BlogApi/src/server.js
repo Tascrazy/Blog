@@ -9,18 +9,33 @@ const app = express();
 app.use(cors({
     origin: 'http://localhost:3000',
 }));
+
 app.use(express.json());
 
 app.get('/api/articles/:name', async (req, res) => {
-
     const { name } = req.params;
     const article = await db.collection('articles').findOne({ name });
 
     if (article) {
         res.json(article);
-    }
-    else {
+    } else {
         res.sendStatus(404);
+    }
+});
+
+app.get('/api/articles', async (req, res) => {
+    try {
+        const articles = await db.collection('articles').find().toArray();
+
+        //Ve se tem algum artigo
+        if (articles.length > 0) {
+            res.json(articles);
+        } else {
+            res.sendStatus(404);
+        }
+    } catch (error) {
+        console.error('Erro ao buscar artigos:', error);
+        res.status(500).json({ message: 'Erro ao buscar artigos' });
     }
 });
 
@@ -42,6 +57,36 @@ app.post('/api/login', async (req, res) => {
 
 });
 
+//Cria um artigo
+app.post('/api/create-article', async (req, res) => {
+    const { name, title, content } = req.body;
+
+    // Verifica a existencia de um artigo com mesmo nome
+    const existingArticle = await db.collection('articles').findOne({ name });
+    if (existingArticle) {
+        // Retorna uma resposta e interrompe a execução
+        return res.status(400).json({ message: 'Já existe um artigo com este nome' });
+    }
+
+    try {
+        // Cria no banco de dados um artigo com tal estrutura
+        await db.collection('articles').insertOne({
+            name,
+            title,
+            content,
+            upVotes: 0,
+            comments: []
+        });
+
+        // Retorna uma resposta após a inserção ser bem-sucedida
+        return res.status(201).json({ message: 'Artigo criado com sucesso' });
+    } catch (error) {
+        // Em caso de erro, retorne um erro 500
+        console.error(error);
+        return res.status(500).json({ message: 'Erro ao criar artigo' });
+    }
+});
+
 //Criar conta do usuário
 app.post('/api/create-account', async (req, res) => {
     const { username, email, password } = req.body;
@@ -57,7 +102,7 @@ app.post('/api/create-account', async (req, res) => {
     await db.collection('users').insertOne({
         username,
         email,
-        passwordHash,
+        passwordHash
     });
 
     res.status(201).json({ message: 'Usuário criado com sucesso' });
@@ -67,19 +112,20 @@ app.post('/api/create-account', async (req, res) => {
 
 app.put('/api/articles/:name/upvote', async (req, res) => {
     const { name } = req.params;
+
     await db.collection('articles').updateOne({ name }, {
         $inc: { upvotes: 1 }
     });
+
     const article = await db.collection('articles').findOne({ name });
 
     if (article) {
-        article.upVotes += 1;
-        res.send(`O artigo ${name} agore possui ${article.upvotes} votos!`)
-    }
-    else {
-        res.send("Este artigo não existe");
+        res.json({ upvotes: article.upvotes });
+    } else {
+        res.status(404).send("Este artigo não existe");
     }
 });
+
 
 app.post('/api/articles/:name/comments', async (req, res) => {
     const { name } = req.params;

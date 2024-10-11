@@ -5,7 +5,7 @@ let db;
 async function connectToDb(cb) {
     const client = new MongoClient('mongodb://localhost:27017');
     await client.connect();
-    db = client.db('blogDatabase');
+    db = client.db('BlogApplication');
     cb();
 }
 export {
