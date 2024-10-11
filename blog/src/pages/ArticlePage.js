@@ -43,7 +43,7 @@ const ArticlePage = () => {
     const handleNewComment = (newComment) => {
         setArticleInfo(prevInfo => ({
             ...prevInfo,
-            comments: [...prevInfo.comments, newComment] // Adiciona o novo comentário ao estado
+            comments: [...prevInfo.comments, newComment]
         }));
     }
 
@@ -56,7 +56,7 @@ const ArticlePage = () => {
             </div>
             <AddCommentForm
                 articleName={articleId}
-                onArticleUpdated={handleNewComment} // Passa a função para adicionar comentários
+                onArticleUpdated={handleNewComment}
             />
             <CommentList comments={articleInfo.comments} />
         </>

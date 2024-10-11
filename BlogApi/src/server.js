@@ -27,7 +27,6 @@ app.get('/api/articles', async (req, res) => {
     try {
         const articles = await db.collection('articles').find().toArray();
 
-        //Ve se tem algum artigo
         if (articles.length > 0) {
             res.json(articles);
         } else {
@@ -57,19 +56,15 @@ app.post('/api/login', async (req, res) => {
 
 });
 
-//Cria um artigo
 app.post('/api/create-article', async (req, res) => {
     const { name, title, content } = req.body;
 
-    // Verifica a existencia de um artigo com mesmo nome
     const existingArticle = await db.collection('articles').findOne({ name });
     if (existingArticle) {
-        // Retorna uma resposta e interrompe a execução
         return res.status(400).json({ message: 'Já existe um artigo com este nome' });
     }
 
     try {
-        // Cria no banco de dados um artigo com tal estrutura
         await db.collection('articles').insertOne({
             name,
             title,
@@ -78,16 +73,13 @@ app.post('/api/create-article', async (req, res) => {
             comments: []
         });
 
-        // Retorna uma resposta após a inserção ser bem-sucedida
         return res.status(201).json({ message: 'Artigo criado com sucesso' });
     } catch (error) {
-        // Em caso de erro, retorne um erro 500
         console.error(error);
         return res.status(500).json({ message: 'Erro ao criar artigo' });
     }
 });
 
-//Criar conta do usuário
 app.post('/api/create-account', async (req, res) => {
     const { username, email, password } = req.body;
 
@@ -95,10 +87,8 @@ app.post('/api/create-account', async (req, res) => {
     if (existingUser) {
         return res.status(400).json({ message: 'Email já cadastrado' });
     }
-    // cria um hash da senha para ser armazenado
     const passwordHash = await bcrypt.hash(password, 10);
 
-    // gravar novo usuário
     await db.collection('users').insertOne({
         username,
         email,
@@ -106,7 +96,6 @@ app.post('/api/create-account', async (req, res) => {
     });
 
     res.status(201).json({ message: 'Usuário criado com sucesso' });
-
 });
 
 
@@ -125,7 +114,6 @@ app.put('/api/articles/:name/upvote', async (req, res) => {
         res.status(404).send("Este artigo não existe");
     }
 });
-
 
 app.post('/api/articles/:name/comments', async (req, res) => {
     const { name } = req.params;
